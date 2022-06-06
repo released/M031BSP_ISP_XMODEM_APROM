@@ -332,6 +332,9 @@ int main(void)
 {
     uint32_t lcmd;
     int32_t i32Err;
+    uint32_t fw_addr = 0;
+    uint8_t i = 0;
+    uint8_t buffer[16] = {0};
 
     /* Unlock protected registers */
     SYS_UnlockReg();
@@ -370,12 +373,12 @@ int main(void)
         } 
 		else 
 		{
-            LDROM_DEBUG("Stay in BOOTLOADER\r\n");
+            LDROM_DEBUG("Stay in BOOTLOADER (checksum invaild)\r\n");
         }
     } 
 	else 
     {
-        LDROM_DEBUG("Stay in BOOTLOADER\r\n");
+        LDROM_DEBUG("Stay in BOOTLOADER (from APPLICATION)\r\n");
         
         //
         // start timer
@@ -402,11 +405,7 @@ int main(void)
 
         if (timeout_cnt > TIMEOUT_INTERVAL) {
             LDROM_DEBUG("Time-out, perform CHIP_RST\r\n");
-            while(!UART_IS_TX_EMPTY(DEBUG_UART_PORT));
-        
-            // Reset chip to enter bootloader
-            SYS_UnlockReg();
-            SYS_ResetChip();
+            SystemReboot_CHIP_RST();
         }
 
     }
@@ -437,10 +436,7 @@ _ISP:
             // do CHIP_RST to enter bootloader again.
             //
             LDROM_DEBUG("Perform CHIP_RST...\r\n");
-            while(!UART_IS_TX_EMPTY(DEBUG_UART_PORT));
-            
-            SYS_UnlockReg();
-            SYS_ResetChip();
+            SystemReboot_CHIP_RST();
 
             /* Trap the CPU */
             while (1);
@@ -449,7 +445,13 @@ _ISP:
 
 
 exit:
-    LDROM_DEBUG("Jump to <APPLICATION>\r\n");
+    fw_addr = APROM_FW_VER_ADDR;
+    for (i = 0 ; i <16 ; i++)
+    {
+        buffer[i] = *(__IO uint8_t *)fw_addr;
+        fw_addr++;
+    }
+    LDROM_DEBUG("Jump to <APPLICATION>,%s\r\n",buffer);
     while(!UART_IS_TX_EMPTY(DEBUG_UART_PORT));
     
     FMC_SetVectorPageAddr(0);               /* Set vector remap to APROM address 0x0      */

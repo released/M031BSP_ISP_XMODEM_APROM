@@ -18,6 +18,7 @@
 
 #define FW_VERSION 0x34
 #define APROM_APPLICATION_SIZE      		0x0001E000UL
+#define APROM_FW_VER_ADDR      		        (FMC_FLASH_PAGE_SIZE)
 
 #include "fmc_user.h"
 #include <string.h>
@@ -50,6 +51,7 @@ extern uint32_t GetApromSize(void);
 extern int ParseCmd(unsigned char *buffer, uint8_t len);
 extern uint32_t g_apromSize, g_dataFlashAddr, g_dataFlashSize;
 
+void SystemReboot_CHIP_RST(void);
 uint8_t read_magic_tag(void);
 void write_magic_tag(uint8_t tag);
 

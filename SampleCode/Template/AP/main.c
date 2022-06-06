@@ -13,6 +13,10 @@
 #include "NuMicro.h"
 #include "EEPROM_Emulate.h"
 
+#define APROM_FW_VER_ADDR      		        (FMC_FLASH_PAGE_SIZE)
+//put F/W verison at 2nd page , for indicator
+const uint8_t FW_Version[] __attribute__((at(APROM_FW_VER_ADDR))) = "FW_VER_V001.001";
+
 #define APROM_1
 // #define APROM_2
 
@@ -95,6 +99,22 @@ void Emulate_EEPROM(void)
 	Search_Valid_Page();	
 }
 #endif
+
+void SystemReboot_CHIP_RST(void)
+{
+    while(!UART_IS_TX_EMPTY(DEBUG_UART_PORT));
+        
+    /* Unlock protected registers */
+    SYS_UnlockReg();
+    /* Enable FMC ISP function */
+    FMC_Open();
+
+    FMC_SET_LDROM_BOOT();
+
+    // NVIC_SystemReset();
+    // SYS_ResetCPU();  
+    SYS_ResetChip();      
+}
 
 uint8_t read_magic_tag(void)
 {
@@ -193,11 +213,7 @@ void UARTx_Process(void)
 	            write_magic_tag(0xA5);
 	        
 	            printf("Perform CHIP_RST to enter BOOTLOADER\r\n");
-	            while(!UART_IS_TX_EMPTY(DEBUG_UART_PORT));
-	        
-	            // Reset chip to enter bootloader
-	            SYS_UnlockReg();
-	            SYS_ResetChip();
+	            SystemReboot_CHIP_RST();
 			
 				break;		
 			

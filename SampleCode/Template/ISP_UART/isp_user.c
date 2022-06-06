@@ -33,6 +33,22 @@ static uint8_t aprom_buf[FMC_FLASH_PAGE_SIZE] __attribute__((aligned(4)));
 uint32_t bUpdateApromCmd;
 uint32_t g_apromSize, g_dataFlashAddr, g_dataFlashSize;
 
+void SystemReboot_CHIP_RST(void)
+{
+    while(!UART_IS_TX_EMPTY(UART1));
+        
+    /* Unlock protected registers */
+    SYS_UnlockReg();
+    /* Enable FMC ISP function */
+    FMC_Open();
+
+    FMC_SET_LDROM_BOOT();
+
+    // NVIC_SystemReset();
+    // SYS_ResetCPU();  
+    SYS_ResetChip();  
+}
+
 uint8_t read_magic_tag(void)
 {
     uint8_t tag = 0;
@@ -168,10 +184,7 @@ int ParseCmd(unsigned char *buffer, uint8_t len)
         // do CHIP_RST to enter bootloader again.
         //
         LDROM_DEBUG("Perform CHIP_RST...\r\n");
-        while(!UART_IS_TX_EMPTY(UART1));
-        
-        SYS_UnlockReg();
-        SYS_ResetChip();
+        SystemReboot_CHIP_RST();
 		#else
         outpw(&SYS->RSTSTS, 3);//clear bit
 
