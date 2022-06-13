@@ -28,18 +28,19 @@ __IO uint32_t timeout_cnt = 0;
 // TODO:
 /*
 	boot loader code range :
-	LDROM : 4K
 
 	target APROM size : 128K = 0x20 000
 
-	for checksum storage start address :	// 4K
-	0x1D 000 ~ 0x1D FFF
-	
-	LDROM extra storage in APROM start address : // 6K
-	0x1E 000 ~ 0x1F 7FF
+	LDROM : 4K
+
+	LDROM extra storage in APROM start address : // 14K
+	0x1C000 ~ 0x1F800
+
+	for checksum storage start address :
+	0x1C000-4 = 0x1BFFC   
 
 	DATA FALSH in APROM start address : // 2K
-	0x1F 800 ~ 0x1F FFF
+	0x1F800 ~ 0x1FFFF
 */
 
 #define DATA_FLASH_OFFSET  						(0x1F800)
@@ -158,7 +159,7 @@ uint32_t caculate_crc32_checksum(uint32_t start, uint32_t size)
 
     CRC_Open(CRC_32, (CRC_WDATA_RVS | CRC_CHECKSUM_RVS | CRC_CHECKSUM_COM), 0xFFFFFFFF, CRC_WDATA_32);
     
-    for(addr = start; addr < size; addr += 4){
+    for(addr = start; addr < (start+size) ; addr += 4){
         data = FMC_Read(addr);
         CRC_WRITE_DATA(data);
     }

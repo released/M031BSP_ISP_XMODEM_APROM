@@ -17,7 +17,7 @@
 
 
 #define FW_VERSION 0x34
-#define APROM_APPLICATION_SIZE      		0x0001E000UL
+#define APROM_APPLICATION_SIZE      		0x0001C000UL
 #define APROM_FW_VER_ADDR      		        (FMC_FLASH_PAGE_SIZE)
 
 #include "fmc_user.h"

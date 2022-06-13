@@ -1,6 +1,6 @@
-LOAD_ROM_1  0x100000 0xFFF
+LOAD_ROM_1  0x100000 0x1000
 {
-	LDROM_Bootloader.bin  0x100000 0xFFF
+	LDROM_Bootloader.bin  0x100000 0x1000
 	{
 		startup_M031Series.o (RESET, +FIRST)
         .ANY (+RO)
@@ -12,9 +12,9 @@ LOAD_ROM_1  0x100000 0xFFF
 	}
 }
 
-LOAD_ROM_2  0x1E000 0x1800
+LOAD_ROM_2  0x1C000 0x3800
 {
-	APROM_Bootloader.bin  0x1E000 0x1800
+	APROM_Bootloader.bin  0x1C000 0x3800
 	{
         .ANY (+RO)
 	}

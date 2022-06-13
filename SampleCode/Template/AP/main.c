@@ -18,7 +18,7 @@
 const uint8_t FW_Version[] __attribute__((at(APROM_FW_VER_ADDR))) = "FW_VER_V001.001";
 
 #define APROM_1
-// #define APROM_2
+//#define APROM_2
 
 #define ENABLE_EMULATE_EEPROM
 // #define ENABLE_RTC

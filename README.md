@@ -11,13 +11,13 @@ update @ 2022/03/31
 		
 				LDROM_Bootloader.bin : 0x100000 ~ 0xFFF (default LDROM size : 4K)
 			
-				APROM_Bootloader.bin : 0x1E000 0x1800 (reserve 6K size , to store extra boot loader code 
+				APROM_Bootloader.bin : 0x1C000 0x3800 (reserve 14K size , to store extra boot loader code 
 	
 		- when power on , will check power on source (ex : power on reset , nReset , from application code)
 	
-		- use CRC to calculate Application code checksum (length : 0x1E000-4 : 0x1DFFC )
+		- use CRC to calculate Application code checksum (length : 0x1C000-4 : 0x1BFFC )
 		
-		- load Application code checksum , from specific address (at 0x1E000 last 4 bytes : 0x1DFFC)
+		- load Application code checksum , from specific address (at 0x1C000 last 4 bytes : 0x1BFFC)
 		
 		- if two checksum result are different , will stuck in Boot loader , and wait for teraterm Xmodem transfer data
 		
@@ -51,7 +51,7 @@ update @ 2022/03/31
 		
 			- generateCRChex.cmd : conver binary file into hex file
 		
-		- check sum calculate will start from 0 to 0x1E000-4 : 0x1DFFC , and store in 0x1DFFC , the last 4 bytes 
+		- check sum calculate will start from 0 to 0x1C000-4 : 0x1BFFC , and store in 0x1BFFC , the last 4 bytes 
 		
 		- at KEIL output file , file name is APROM_application , under \obj folder , 
 	
@@ -63,11 +63,11 @@ update @ 2022/03/31
 
 ![image](https://github.com/released/M031BSP_ISP_XMODEM_APROM/blob/main/APROM_SRecord_cmd_file.jpg)
 		
-		- after project compile finish , binary size will be 120K (total application code size : 0x1E000)
+		- after project compile finish , binary size will be 112K (total application code size : 0x1C000)
 		
 		- under terminal , use keyboard , 'z' , 'Z' , will write specific value in EMULATE EEPROM , and return to boot loader
 		
-		- use teraterm Xmodem transfer data , to programming Application code project binary (120K) , when under Boot loader flow
+		- use teraterm Xmodem transfer data , to programming Application code project binary (112K) , when under Boot loader flow
 
 		- with teraterm Xmodem to select file , 
 
@@ -87,13 +87,13 @@ update @ 2022/03/31
 
 	- LDROM_Bootloader.bin : 0x100000 ~ 0xFFF
 	
-	- APROM_Bootloader.bin : 0x1E000 0x1800
+	- APROM_Bootloader.bin : 0x1C000 0x3800
 	
 	- Application code START address : 0x00000
 	
 	- Data flash : 0x1F800 , 2K
 	
-	- Chcecksum storage : 0x1DFFC
+	- Chcecksum storage : 0x1BFFC
 
 3. Function assignment
 
@@ -113,7 +113,7 @@ below is boot loader project , ICP programming setting
 
 - LDROM_Bootloader.bin : under LDROM
 
-- APROM_Bootloader.bin : 0x1E000
+- APROM_Bootloader.bin : 0x1C000
 
 ![image](https://github.com/released/M031BSP_ISP_XMODEM_APROM/blob/main/LDROM_ICP_update.jpg)
 
