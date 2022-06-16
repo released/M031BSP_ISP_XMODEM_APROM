@@ -48,6 +48,36 @@ __IO uint32_t timeout_cnt = 0;
 #define DATA_FLASH_AMOUNT						(48)
 #define DATA_FLASH_PAGE  						(4)     // M031 page : 0x200 (512)
 
+// #define ENABLE_SW_CRC32
+
+#if defined (ENABLE_SW_CRC32)
+unsigned long table[256];
+unsigned long state = 0xFFFFFFFF;
+#define POLYNOMIAL 0xedb88320
+void calculate_table(void)
+{
+    unsigned b = 0;
+    unsigned long v = 0;
+    int i = 0;
+
+    for (b = 0; b < 256; ++b)
+    {
+        v = b;
+        i = 8;
+        for (; --i >= 0; )
+            v = (v & 1) ? ((v >> 1) ^ POLYNOMIAL) : (v >> 1);
+        table[b] = v;
+    }
+}
+
+unsigned long UPDC32(unsigned char octet, unsigned long crc)
+{
+    // The original code had this as a #define
+    return table[(crc ^ octet) & 0xFF] ^ (crc >> 8);
+}
+
+#endif
+
 #if defined (ENABLE_EMULATE_EEPROM)
 int set_data_flash_base(uint32_t u32DFBA)
 {
@@ -152,11 +182,30 @@ uint8_t check_reset_source(void)
     return FALSE;
 }
 
-
 uint32_t caculate_crc32_checksum(uint32_t start, uint32_t size)
 {
+    #if defined (ENABLE_SW_CRC32)
+    volatile uint32_t addr, data;    
+
+    LDROM_DEBUG("ENABLE_SW_CRC32\r\n",);
+    calculate_table();
+    state = 0xFFFFFFFF;    
+    addr = start;
+
+    for(addr = start; addr < (start+size) ; addr += 4){
+        data = FMC_Read(addr);
+        state = UPDC32(GET_BYTE0(data), state);
+        state = UPDC32(GET_BYTE1(data), state);
+        state = UPDC32(GET_BYTE2(data), state);
+        state = UPDC32(GET_BYTE3(data), state); 
+    }
+
+    return ~state;   
+
+    #else
     volatile uint32_t addr, data;
 
+    LDROM_DEBUG("HW CRC32\r\n",);
     CRC_Open(CRC_32, (CRC_WDATA_RVS | CRC_CHECKSUM_RVS | CRC_CHECKSUM_COM), 0xFFFFFFFF, CRC_WDATA_32);
     
     for(addr = start; addr < (start+size) ; addr += 4){
@@ -164,6 +213,7 @@ uint32_t caculate_crc32_checksum(uint32_t start, uint32_t size)
         CRC_WRITE_DATA(data);
     }
     return CRC_GetChecksum();
+    #endif
 }
 
 uint8_t verify_application_chksum(void)
@@ -331,7 +381,7 @@ void SYS_Init(void)
 
 int main(void)
 {
-    uint32_t lcmd;
+    // uint32_t lcmd;
     int32_t i32Err;
     uint32_t fw_addr = 0;
     uint8_t i = 0;

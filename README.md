@@ -1,6 +1,12 @@
 # M031BSP_ISP_XMODEM_APROM
  M031BSP_ISP_XMODEM_APROM
 
+
+update @ 2022/06/16
+
+1. Add SW CRC32  , check define : ENABLE_SW_CRC32
+
+
 update @ 2022/03/31
 
 1. Scenario notice:
