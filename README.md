@@ -6,6 +6,8 @@ update @ 2022/06/16
 
 1. Add SW CRC32  , check define : ENABLE_SW_CRC32
 
+2. check define : USE_SRAM_TABLE , USE_FLASH_TABLE , to use CRC32 table put in SRAM or FLASH
+
 
 update @ 2022/03/31
 
