@@ -262,7 +262,7 @@ uint32_t caculate_crc32_checksum(uint32_t start, uint32_t size)
     #else
     volatile uint32_t addr, data;
 
-    LDROM_DEBUG("HW CRC32\r\n",);
+    LDROM_DEBUG("HW CRC32\r\n");
     CRC_Open(CRC_32, (CRC_WDATA_RVS | CRC_CHECKSUM_RVS | CRC_CHECKSUM_COM), 0xFFFFFFFF, CRC_WDATA_32);
     
     for(addr = start; addr < (start+size) ; addr += 4){
